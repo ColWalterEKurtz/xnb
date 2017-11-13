@@ -70,7 +70,7 @@ void showHelp()
   cout << "  echo \"hello world\" | xnb -x | xnb -b" << endl;
   cout << endl;
   cout << "  echo \"hello world\"                    # print \"hello world\"" << endl;
-  cout << "                     | xnb -x           # convert to hex" << endl;
+  cout << "                     | xnb -x           # convert to hex numbers" << endl;
   cout << "                              | xnb -b  # back to \"hello world\"" << endl;
   cout << endl;
 }
