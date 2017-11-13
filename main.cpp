@@ -50,6 +50,48 @@
 using namespace std;
 
 
+// -----
+// ishex
+// -----
+/**
+ * This function checks whether the passed character
+ * is a valid hexadecimal digit or not.
+ *
+ * @param c  the character to check
+ *
+ * @return
+ * Value | Meaning
+ * ----: | :------
+ *  true | the passed character is a valid hexadecimal digit
+ * false | the passed character is no valid hexadecimal digit
+ */
+bool ishex(char c)
+{
+  // valid hexadecimal digits
+  switch (c)
+  {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    case 'A': case 'a':
+    case 'B': case 'b':
+    case 'C': case 'c':
+    case 'D': case 'd':
+    case 'E': case 'e':
+    case 'F': case 'f': return true;
+  }
+
+  // invalid character found
+  return false;
+}
+
 // -------
 // hex2dec
 // -------
@@ -173,34 +215,50 @@ bool hexify(int max = 0)
 /**
  * This function reads hex numbers from stdin and
  * prints their real byte value to stdout.
+ *
+ * @return
+ * Value | Meaning
+ * ----: | :------
+ *  true | cin reached eof
+ * false | cin didn't reach eof
  */
 bool unhexify()
 {
   // first hexadecimal digit
-  char c;
+  char d1;
 
   // read each byte individually from the stream
-  while ( cin.get(c) )
+  while ( cin.get(d1) )
   {
     // skip line feed characters
-    while (c == 10)
+    while (d1 == 10)
     {
       // get next byte from the stream
-      if ( !cin.get(c) )
+      if ( !cin.get(d1) )
       {
         // check if all data has been read
         return cin.eof();
       }
     }
 
+    // check extracted character
+    if ( !ishex(d1) )
+    {
+      // notify user
+      msg::err("invalid character found");
+
+      // signalize trouble
+      return false;
+    }
+
     // second hexadecimal digit
-    char d = 10;
+    char d2 = 10;
 
     // skip line feed characters
-    while (d == 10)
+    while (d2 == 10)
     {
       // read second hexadecimal digit from the stream
-      if ( !cin.get(d) )
+      if ( !cin.get(d2) )
       {
         // notify user
         msg::err("unexpected end of stream");
@@ -210,8 +268,18 @@ bool unhexify()
       }
     }
 
+    // check extracted character
+    if ( !ishex(d2) )
+    {
+      // notify user
+      msg::err("invalid character found");
+
+      // signalize trouble
+      return false;
+    }
+
     // print native byte
-    cout << hex2dec(c, d);
+    cout << hex2dec(d1, d2);
   }
 
   // check if all data has been read
