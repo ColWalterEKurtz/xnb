@@ -83,7 +83,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2017-11-13 23:14:57 UTC" << endl;
+  cout << "2017-11-13 23:48:16 UTC" << endl;
 }
 
 // -----
@@ -217,8 +217,8 @@ bool hexify(int max = 0)
   // read each byte individually from the stream
   while ( cin.get(c) )
   {
-    // convert char to unsigned
-    unsigned u = static_cast<unsigned>(c);
+    // convert char to unsigned char
+    unsigned u = static_cast<unsigned char>(c);
 
     // check if limit is given
     if (max > 0)
