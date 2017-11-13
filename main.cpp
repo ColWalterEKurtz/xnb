@@ -54,8 +54,8 @@ using namespace std;
 // ishex
 // -----
 /**
- * This function checks whether the passed character
- * is a valid hexadecimal digit or not.
+ * @brief  This function checks whether the passed character
+ *         is a valid hexadecimal digit or not.
  *
  * @param c  the character to check
  *
@@ -96,8 +96,8 @@ bool ishex(char c)
 // hex2dec
 // -------
 /**
- * This function converts a hexadecimal number with two digits
- * to a base 10 number.
+ * @brief  This function converts a hexadecimal number with two digits
+ *         to a base 10 number.
  *
  * @param hi  this is the 'hi' part from: hi * 16 + lo
  * @param lo  this is the 'lo' part from: hi * 16 + lo
@@ -157,8 +157,8 @@ unsigned char hex2dec(char hi, char lo)
 // hexify
 // ------
 /**
- * This function reads each byte from stdin and
- * writes its hexadecimal representation to stdout.
+ * @brief  This function reads each byte from stdin and
+ *         writes its hexadecimal representation to stdout.
  *
  * @param max  the maximum number of bytes to print per line
  *             - each byte causes two characters of output
@@ -213,8 +213,8 @@ bool hexify(int max = 0)
 // unhexify
 // --------
 /**
- * This function reads hex numbers from stdin and
- * prints their real byte value to stdout.
+ * @brief  This function reads hex numbers from stdin and
+ *         prints their real byte value to stdout.
  *
  * @return
  * Value | Meaning
