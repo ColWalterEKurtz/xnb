@@ -83,7 +83,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2017-11-13 21:45:57 UTC" << endl;
+  cout << "2017-11-13 23:14:57 UTC" << endl;
 }
 
 // -----
