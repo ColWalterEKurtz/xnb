@@ -23,25 +23,11 @@
 // -----------------------------------------------------------------------------
 // Includes                                                             Includes
 // -----------------------------------------------------------------------------
-// #include <cstdlib>
-// #include <climits>
-// #include <cfloat>
-// #include <cmath>
-// #include <ctime>
-// #include <list>
-// #include <stack>
-// #include <vector>
-// #include <queue>
-// #include <deque>
-// #include <set>
-// #include <map>
-// #include <algorithm>
-// #include <string>
-// #include <sstream>
-// #include <fstream>
+#include <string>
 #include <iostream>
 #include <iomanip>
 #include "message.h"
+#include "cli.h"
 
 
 // -----------------------------------------------------------------------------
@@ -49,6 +35,56 @@
 // -----------------------------------------------------------------------------
 using namespace std;
 
+
+// --------
+// showHelp
+// --------
+/**
+ *
+ */
+void showHelp()
+{
+  cout << endl;
+  cout << "NAME" << endl;
+  cout << "  xnb - hex and back" << endl;
+  cout << endl;
+  cout << "SYNOPSIS" << endl;
+  cout << "  xnb {-h|-v}             show help resp. version and exit" << endl;
+  cout << "  xnb -x [-n <max>] [-t]  convert bytes to hexadecimal numbers" << endl;
+  cout << "  xnb -b                  convert hexadecimal numbers back to bytes" << endl;
+  cout << endl;
+  cout << "DESCRIPTION" << endl;
+  cout << "  xnb is a filter that can do exactly two things:" << endl;
+  cout << "  1. convert each byte from a stream to a hexadecimal number with two digits" << endl;
+  cout << "  2. convert each hexadecimal number from a stream back to its native byte value" << endl;
+  cout << endl;
+  cout << "OPTIONS" << endl;
+  cout << "  -b        convert hexadecimal numbers back to bytes" << endl;
+  cout << "  -h        show help and exit" << endl;
+  cout << "  -n <max>  don't print more than <max> bytes per line" << endl;
+  cout << "  -t        append a trailing LF character" << endl;
+  cout << "  -v        show version and exit" << endl;
+  cout << "  -x        convert bytes to hexadecimal numbers" << endl;
+  cout << endl;
+  cout << "EXAMPLES" << endl;
+  cout << "  echo \"hello world\" | xnb -x | xnb -b" << endl;
+  cout << endl;
+  cout << "  echo \"hello world\"                    # print \"hello world\"" << endl;
+  cout << "                     | xnb -x           # convert to hex" << endl;
+  cout << "                              | xnb -b  # back to \"hello world\"" << endl;
+  cout << endl;
+}
+
+// -----------
+// showVersion
+// -----------
+/**
+ *
+ */
+void showVersion()
+{
+  cout << "2017-11-13 21:45:57 UTC" << endl;
+}
 
 // -----
 // ishex
@@ -303,7 +339,90 @@ bool unhexify()
  */
 int main(int argc, char** argv)
 {
-  // hexify(40);
-  unhexify();
+  cli cmdl;
+
+  // parse command line
+  if ( cmdl.parse(argc, argv) )
+  {
+    // check positional parameters
+    if ( !cmdl.pparams.empty() )
+    {
+      // notify user
+      msg::err("no positional parameters allowed");
+
+      // signalize trouble
+      return 1;
+    }
+
+    // SHOW_HELP
+    if (cmdl.operation == cli::SHOW_HELP)
+    {
+      showHelp();
+    }
+
+    // SHOW_VERSION
+    else if (cmdl.operation == cli::SHOW_VERSION)
+    {
+      showVersion();
+    }
+
+    // HEXIFY
+    else if (cmdl.operation == cli::HEXIFY)
+    {
+      // check limit
+      if (cmdl.maxBytes < 0) 
+      {
+        // notify user
+        msg::err("maximum number of bytes per line must not be negative");
+
+        // signalize trouble
+        return 1;
+      }
+
+      // create hex numbers
+      if ( !hexify(cmdl.maxBytes) )
+      {
+        // signalize trouble
+        return 1;
+      }
+
+      // print trailing LF character
+      if (cmdl.appendLF)
+      {
+        cout << static_cast<char>(10);
+      }
+    }
+
+    // UNHEXIFY
+    else if (cmdl.operation == cli::UNHEXIFY)
+    {
+      // restore native bytes
+      if ( !unhexify() )
+      {
+        // signalize trouble
+        return 1;
+      }
+    }
+
+    // wtf
+    else
+    {
+      // notify user
+      msg::err("oops...");
+
+      // signalize trouble
+      return 1;
+    }
+  }
+
+  // invalid command line
+  else
+  {
+    // signalize trouble
+    return 1;
+  }
+
+  // signalize success
+  return 0;
 }
 

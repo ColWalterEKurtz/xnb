@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# replace entire line
+sed -re "s/.*/$(date -u +"  cout << \"%Y-%m-%d %H:%M:%S %Z\" << endl;")/"
+
+# signalize success
+exit 0
+

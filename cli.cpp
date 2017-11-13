@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the implementation of the @ref cli class.
  * @author     Col. Walter E. Kurtz
- * @version    2017-07-18
+ * @version    2017-11-13
  * @copyright  GNU General Public License - Version 3.0
  */
 
@@ -78,7 +78,7 @@ bool cli::parse(int argc, char** argv)
   m_argv0 = argv[0];
 
   // set valid option characters
-  const char* optstring = ":hvSs:01:2:";
+  const char* optstring = ":hvbn:tx";
 
   // the ASCII code of the current option character
   int optchar;
@@ -96,59 +96,56 @@ bool cli::parse(int argc, char** argv)
 
         operation = SHOW_HELP;
 
-        // next case
+        // next parameter
         break;
 
       case 'v':
 
         operation = SHOW_VERSION;
 
-        // next case
+        // next parameter
         break;
 
-      case 'S':
+      case 'b':
 
-        operation = SHOW_DEFAULT_VALUES;
+        operation = UNHEXIFY;
 
-        // next case
+        // next parameter
         break;
 
-      case 's':
+      case 'n':
 
-        file_settings = argstream.str();
+        // convert string to int
+        if ( !(argstream >> maxBytes) )
+        {
+          // notify user
+          msg::err( msg::cat("invalid number given: -", int2alnum(optopt)) );
 
-        // next case
+          // signalize trouble
+          return false;
+        }
+
+        // next parameter
         break;
 
-      case '0':
+      case 't':
 
-        operation = CREATE_COMMON_FILES;
+        appendLF = true;
 
-        // next case
+        // next parameter
         break;
 
-      case '1':
+      case 'x':
 
-        operation = SHOW_LIST_OF_COORDINATES;
+        operation = HEXIFY;
 
-        file_pbm = argstream.str();
-
-        // next case
-        break;
-
-      case '2':
-
-        operation = CREATE_DERIVED_FILES;
-
-        file_coordinates = argstream.str();
-
-        // next case
+        // next parameter
         break;
 
       case ':':
 
         // notify user
-        msg::err( msg::cat("missing argument: -", int2char(optopt)) );
+        msg::err( msg::cat("missing argument: -", int2alnum(optopt)) );
 
         // signalize trouble
         return false;
@@ -156,7 +153,7 @@ bool cli::parse(int argc, char** argv)
       case '?':
 
         // notify user
-        msg::err( msg::cat("unknown option: -", int2char(optopt)) );
+        msg::err( msg::cat("unknown option: -", int2alnum(optopt)) );
 
         // signalize trouble
         return false;
@@ -231,22 +228,23 @@ void cli::reset()
   // drop positional parameters
   pparams.clear();
 
-  // reset filenames
-  file_pbm = "";
-  file_coordinates ="";
-  file_settings = "";
+  // reset number of bytes per line
+  maxBytes = 0;
+
+  // don't append LF character by default
+  appendLF = false;
 
   // reset executable's name
   m_argv0 = "";
 }
 
-// --------
-// int2char
-// --------
+// ---------
+// int2alnum
+// ---------
 /*
  *
  */
-string cli::int2char(int ascii) const
+string cli::int2alnum(int ascii) const
 {
   switch (ascii)
   {

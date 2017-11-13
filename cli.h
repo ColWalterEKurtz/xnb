@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the definition of the @ref cli class.
  * @author     Col. Walter E. Kurtz
- * @version    2017-07-18
+ * @version    2017-11-13
  * @copyright  GNU General Public License - Version 3.0
  */
 
@@ -43,24 +43,19 @@ public:
   {
     SHOW_HELP,
     SHOW_VERSION,
-    SHOW_DEFAULT_VALUES,
-    CREATE_COMMON_FILES,
-    SHOW_LIST_OF_COORDINATES,
-    CREATE_DERIVED_FILES
+    HEXIFY,
+    UNHEXIFY
   }
   operation;
 
   /// the list of positional parameters
   std::vector< std::string > pparams;
 
-  /// the name of the pbm file to parse
-  std::string file_pbm;
+  /// the maximum number of bytes per line
+  int maxBytes;
 
-  /// the name of the list file
-  std::string file_coordinates;
-
-  /// the name of the settings file
-  std::string file_settings;
+  /// append LF character after all hex numbers have been printed
+  int appendLF;
 
 
   // ---------------------------------------------------------------------------
@@ -93,6 +88,8 @@ public:
   // --------
   /**
    * @brief  returns argv[0]
+   *
+   * @param brief  set true to remove all directories
    */
   std::string getXName(bool brief = true) const;
 
@@ -111,13 +108,13 @@ protected:
    */
   void reset();
 
-  // --------
-  // int2char
-  // --------
+  // ---------
+  // int2alnum
+  // ---------
   /**
    *
    */
-  std::string int2char(int ascii) const;
+  std::string int2alnum(int ascii) const;
 
 
 private:
