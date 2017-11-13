@@ -50,6 +50,67 @@
 using namespace std;
 
 
+// -------
+// hex2dec
+// -------
+/**
+ * This function converts a hexadecimal number with two digits
+ * to a base 10 number.
+ *
+ * @param hi  this is the 'hi' part from: hi * 16 + lo
+ * @param lo  this is the 'lo' part from: hi * 16 + lo
+ *
+ * @return hi * 16 + lo
+ */
+unsigned char hex2dec(char hi, char lo)
+{
+  // the base 10 number
+  unsigned char byte = 0;
+
+  // add higher byte
+  switch (hi)
+  {
+    case '1':           byte +=  16; break;
+    case '2':           byte +=  32; break;
+    case '3':           byte +=  48; break;
+    case '4':           byte +=  64; break;
+    case '5':           byte +=  80; break;
+    case '6':           byte +=  96; break;
+    case '7':           byte += 112; break;
+    case '8':           byte += 128; break;
+    case '9':           byte += 144; break;
+    case 'A': case 'a': byte += 160; break;
+    case 'B': case 'b': byte += 176; break;
+    case 'C': case 'c': byte += 192; break;
+    case 'D': case 'd': byte += 208; break;
+    case 'E': case 'e': byte += 224; break;
+    case 'F': case 'f': byte += 240; break;
+  }
+
+  // add lower byte
+  switch (lo)
+  {
+    case '1':           byte +=  1; break;
+    case '2':           byte +=  2; break;
+    case '3':           byte +=  3; break;
+    case '4':           byte +=  4; break;
+    case '5':           byte +=  5; break;
+    case '6':           byte +=  6; break;
+    case '7':           byte +=  7; break;
+    case '8':           byte +=  8; break;
+    case '9':           byte +=  9; break;
+    case 'A': case 'a': byte += 10; break;
+    case 'B': case 'b': byte += 11; break;
+    case 'C': case 'c': byte += 12; break;
+    case 'D': case 'd': byte += 13; break;
+    case 'E': case 'e': byte += 14; break;
+    case 'F': case 'f': byte += 15; break;
+  }
+
+  // return decimal value
+  return byte;
+}
+
 // ------
 // hexify
 // ------
@@ -149,51 +210,8 @@ bool unhexify()
       }
     }
 
-    // the real byte value
-    unsigned char byte = 0;
-
-    // add higher byte
-    switch (c)
-    {
-      case '1':           byte +=  16; break;
-      case '2':           byte +=  32; break;
-      case '3':           byte +=  48; break;
-      case '4':           byte +=  64; break;
-      case '5':           byte +=  80; break;
-      case '6':           byte +=  96; break;
-      case '7':           byte += 112; break;
-      case '8':           byte += 128; break;
-      case '9':           byte += 144; break;
-      case 'A': case 'a': byte += 160; break;
-      case 'B': case 'b': byte += 176; break;
-      case 'C': case 'c': byte += 192; break;
-      case 'D': case 'd': byte += 208; break;
-      case 'E': case 'e': byte += 224; break;
-      case 'F': case 'f': byte += 240; break;
-    }
-
-    // add lower byte
-    switch (d)
-    {
-      case '1':           byte +=  1; break;
-      case '2':           byte +=  2; break;
-      case '3':           byte +=  3; break;
-      case '4':           byte +=  4; break;
-      case '5':           byte +=  5; break;
-      case '6':           byte +=  6; break;
-      case '7':           byte +=  7; break;
-      case '8':           byte +=  8; break;
-      case '9':           byte +=  9; break;
-      case 'A': case 'a': byte += 10; break;
-      case 'B': case 'b': byte += 11; break;
-      case 'C': case 'c': byte += 12; break;
-      case 'D': case 'd': byte += 13; break;
-      case 'E': case 'e': byte += 14; break;
-      case 'F': case 'f': byte += 15; break;
-    }
-
     // print native byte
-    cout << byte;
+    cout << hex2dec(c, d);
   }
 
   // check if all data has been read
