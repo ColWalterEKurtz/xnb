@@ -23,7 +23,6 @@
 // -----------------------------------------------------------------------------
 // Includes                                                             Includes
 // -----------------------------------------------------------------------------
-#include <string>
 #include <iostream>
 #include <iomanip>
 #include "message.h"
@@ -83,7 +82,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2017-11-13 23:48:16 UTC" << endl;
+  cout << "2017-11-13 23:59:18 UTC" << endl;
 }
 
 // -----
