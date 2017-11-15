@@ -48,9 +48,9 @@ void showHelp()
   cout << "  xnb - hex and back" << endl;
   cout << endl;
   cout << "SYNOPSIS" << endl;
-  cout << "  xnb {-h|-v}             show help resp. version and exit" << endl;
-  cout << "  xnb -x [-n <max>] [-t]  convert bytes to hexadecimal numbers" << endl;
-  cout << "  xnb -b                  convert hexadecimal numbers back to bytes" << endl;
+  cout << "  xnb {-h|-v}              show help resp. version and exit" << endl;
+  cout << "  xnb -x [-n <max>] [-lt]  convert bytes to hexadecimal numbers" << endl;
+  cout << "  xnb -b                   convert hexadecimal numbers back to bytes" << endl;
   cout << endl;
   cout << "DESCRIPTION" << endl;
   cout << "  xnb is a filter that can do exactly two things:" << endl;
@@ -60,6 +60,7 @@ void showHelp()
   cout << "OPTIONS" << endl;
   cout << "  -b        convert hexadecimal numbers back to bytes" << endl;
   cout << "  -h        show help and exit" << endl;
+  cout << "  -l        print a real LF character each time a 0A byte hab been encoded" << endl;
   cout << "  -n <max>  don't print more than <max> bytes per line" << endl;
   cout << "  -t        append a trailing LF character" << endl;
   cout << "  -v        show version and exit" << endl;
@@ -198,14 +199,18 @@ unsigned char hex2dec(char hi, char lo)
  * @param max  the maximum number of bytes to print per line
  *             - each byte causes two characters of output
  *             - max == 0 never breaks a line
+ *             - only LF characters are used to break lines
+ *
+ * @param breakLF  print a real LF each time a 0A byte
+ *                 has been encoded
  *
  * @return
  * Value | Meaning
  * ----: | :------
- *  true | cin reached eof
- * false | cin didn't reach eof
+ *   < 0 | error
+ *  >= 0 | the value of the last byte pushed to stdout
  */
-bool hexify(int max = 0)
+int hexify(int max = 0, bool breakLF = false)
 {
   // one byte from the stream
   char c;
@@ -213,11 +218,14 @@ bool hexify(int max = 0)
   // initialize byte counter
   int out = max;
 
+ // the number to print
+  int byte = -1;
+
   // read each byte individually from the stream
   while ( cin.get(c) )
   {
     // convert char to unsigned char
-    unsigned u = static_cast<unsigned char>(c);
+    byte = static_cast<unsigned char>(c);
 
     // check if limit is given
     if (max > 0)
@@ -237,11 +245,32 @@ bool hexify(int max = 0)
     }
 
     // use iomanip to create hex numbers
-    cout << setfill('0') << hex << uppercase << setw(2) << u;
+    cout << setfill('0') << hex << uppercase << setw(2) << byte;
+
+    // check if line breaking is enabled
+    if (breakLF)
+    {
+      // check if a LF character has been read
+      if (byte == 10)
+      {
+        // start new line (use LF character only)
+        cout << static_cast<char>(10);
+
+        // reset counter
+        out = max;
+      }
+    }
   }
 
-  // check if all data has been read
-  return cin.eof();
+  // check eof state
+  if ( !cin.eof() )
+  {
+    // signalize trouble
+    return -1;
+  }
+
+  // return last byte written to stdout
+  return byte;
 }
 
 // --------
@@ -254,11 +283,14 @@ bool hexify(int max = 0)
  * @return
  * Value | Meaning
  * ----: | :------
- *  true | cin reached eof
- * false | cin didn't reach eof
+ *   < 0 | error
+ *  >= 0 | the value of the last byte pushed to stdout
  */
-bool unhexify()
+int unhexify()
 {
+  // the byte to print
+  int byte = -1;
+
   // first hexadecimal digit
   char d1;
 
@@ -271,8 +303,8 @@ bool unhexify()
       // get next byte from the stream
       if ( !cin.get(d1) )
       {
-        // check if all data has been read
-        return cin.eof();
+        // return last byte written to stdout
+        return byte;
       }
     }
 
@@ -283,7 +315,7 @@ bool unhexify()
       msg::err("invalid character found");
 
       // signalize trouble
-      return false;
+      return -1;
     }
 
     // second hexadecimal digit
@@ -299,7 +331,7 @@ bool unhexify()
         msg::err("unexpected end of stream");
 
         // signalize trouble
-        return false;
+        return -1;
       }
     }
 
@@ -313,12 +345,15 @@ bool unhexify()
       return false;
     }
 
+    // convert number to native byte
+    byte = hex2dec(d1, d2);
+
     // print native byte
-    cout << hex2dec(d1, d2);
+    cout << byte;
   }
 
-  // check if all data has been read
-  return cin.eof();
+  // return last byte written to stdout
+  return byte;
 }
 
 // ----
@@ -379,7 +414,7 @@ int main(int argc, char** argv)
       }
 
       // create hex numbers
-      if ( !hexify(cmdl.maxBytes) )
+      if (hexify(cmdl.maxBytes, true) < 0)
       {
         // signalize trouble
         return 1;
@@ -396,7 +431,7 @@ int main(int argc, char** argv)
     else if (cmdl.operation == cli::UNHEXIFY)
     {
       // restore native bytes
-      if ( !unhexify() )
+      if (unhexify() < 0)
       {
         // signalize trouble
         return 1;
