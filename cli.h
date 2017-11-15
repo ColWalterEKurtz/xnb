@@ -54,6 +54,9 @@ public:
   /// the maximum number of bytes per line
   int maxBytes;
 
+  /// add LF after each encoded 0A
+  bool linebreak;
+
   /// append LF character after all hex numbers have been printed
   int appendLF;
 

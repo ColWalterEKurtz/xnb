@@ -78,7 +78,7 @@ bool cli::parse(int argc, char** argv)
   m_argv0 = argv[0];
 
   // set valid option characters
-  const char* optstring = ":hvbn:tx";
+  const char* optstring = ":hvbln:tx";
 
   // the ASCII code of the current option character
   int optchar;
@@ -109,6 +109,13 @@ bool cli::parse(int argc, char** argv)
       case 'b':
 
         operation = UNHEXIFY;
+
+        // next parameter
+        break;
+
+      case 'l':
+
+        linebreak = true;
 
         // next parameter
         break;
@@ -230,6 +237,9 @@ void cli::reset()
 
   // reset number of bytes per line
   maxBytes = 0;
+
+  // don't brak lines by default
+  linebreak = false;
 
   // don't append LF character by default
   appendLF = false;

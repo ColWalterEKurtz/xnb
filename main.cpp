@@ -60,7 +60,7 @@ void showHelp()
   cout << "OPTIONS" << endl;
   cout << "  -b        convert hexadecimal numbers back to bytes" << endl;
   cout << "  -h        show help and exit" << endl;
-  cout << "  -l        print a real LF character each time a 0A byte hab been encoded" << endl;
+  cout << "  -l        print a real LF character each time a 0A byte has been encoded" << endl;
   cout << "  -n <max>  don't print more than <max> bytes per line" << endl;
   cout << "  -t        append a trailing LF character" << endl;
   cout << "  -v        show version and exit" << endl;
@@ -207,7 +207,8 @@ unsigned char hex2dec(char hi, char lo)
  * @return
  * Value | Meaning
  * ----: | :------
- *   < 0 | error
+ *    -2 | error
+ *    -1 | no data
  *  >= 0 | the value of the last byte pushed to stdout
  */
 int hexify(int max = 0, bool breakLF = false)
@@ -266,7 +267,7 @@ int hexify(int max = 0, bool breakLF = false)
   if ( !cin.eof() )
   {
     // signalize trouble
-    return -1;
+    return -2;
   }
 
   // return last byte written to stdout
@@ -349,7 +350,7 @@ int unhexify()
     byte = hex2dec(d1, d2);
 
     // print native byte
-    cout << byte;
+    cout << static_cast<unsigned char>(byte);
   }
 
   // return last byte written to stdout
@@ -414,7 +415,10 @@ int main(int argc, char** argv)
       }
 
       // create hex numbers
-      if (hexify(cmdl.maxBytes, true) < 0)
+      int last = hexify(cmdl.maxBytes, cmdl.linebreak);
+
+      // check last byte
+      if (last == -2)
       {
         // signalize trouble
         return 1;
@@ -423,7 +427,10 @@ int main(int argc, char** argv)
       // print trailing LF character
       if (cmdl.appendLF)
       {
-        cout << static_cast<char>(10);
+        if ( !(cmdl.linebreak && (last == 10)) )
+        {
+          cout << static_cast<char>(10);
+        }
       }
     }
 
