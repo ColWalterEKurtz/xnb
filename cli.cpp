@@ -115,7 +115,7 @@ bool cli::parse(int argc, char** argv)
 
       case 'l':
 
-        linebreak = true;
+        syncLF = true;
 
         // next parameter
         break;
@@ -238,8 +238,8 @@ void cli::reset()
   // reset number of bytes per line
   maxBytes = 0;
 
-  // don't brak lines by default
-  linebreak = false;
+  // don't break lines by default
+  syncLF = false;
 
   // don't append LF character by default
   appendLF = false;

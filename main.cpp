@@ -35,6 +35,21 @@
 using namespace std;
 
 
+// -----------------------------------------------------------------------------
+// Magical numbers                                               Magical numbers
+// -----------------------------------------------------------------------------
+
+/// returned by hexify() and unhexify() if stdin has no data
+const int EMPTY = -1;
+
+/// returned by hexify() and unhexify() if stdin got stuck
+const int BUGGY = -2;
+
+
+// -----------------------------------------------------------------------------
+// Functions                                                           Functions
+// -----------------------------------------------------------------------------
+
 // --------
 // showHelp
 // --------
@@ -83,7 +98,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2017-11-13 23:59:18 UTC" << endl;
+  cout << "2017-11-16 01:07:16 UTC" << endl;
 }
 
 // -----
@@ -207,8 +222,8 @@ unsigned char hex2dec(char hi, char lo)
  * @return
  * Value | Meaning
  * ----: | :------
- *    -2 | error
- *    -1 | no data
+ * BUGGY | error
+ * EMPTY | no data
  *  >= 0 | the value of the last byte pushed to stdout
  */
 int hexify(int max = 0, bool breakLF = false)
@@ -219,8 +234,8 @@ int hexify(int max = 0, bool breakLF = false)
   // initialize byte counter
   int out = max;
 
- // the number to print
-  int byte = -1;
+  // the number to print
+  int byte = EMPTY;
 
   // read each byte individually from the stream
   while ( cin.get(c) )
@@ -267,7 +282,7 @@ int hexify(int max = 0, bool breakLF = false)
   if ( !cin.eof() )
   {
     // signalize trouble
-    return -2;
+    return BUGGY;
   }
 
   // return last byte written to stdout
@@ -284,13 +299,14 @@ int hexify(int max = 0, bool breakLF = false)
  * @return
  * Value | Meaning
  * ----: | :------
- *   < 0 | error
+ * BUGGY | error
+ * EMPTY | no data
  *  >= 0 | the value of the last byte pushed to stdout
  */
 int unhexify()
 {
   // the byte to print
-  int byte = -1;
+  int byte = EMPTY;
 
   // first hexadecimal digit
   char d1;
@@ -316,7 +332,7 @@ int unhexify()
       msg::err("invalid character found");
 
       // signalize trouble
-      return -1;
+      return BUGGY;
     }
 
     // second hexadecimal digit
@@ -332,7 +348,7 @@ int unhexify()
         msg::err("unexpected end of stream");
 
         // signalize trouble
-        return -1;
+        return BUGGY;
       }
     }
 
@@ -343,7 +359,7 @@ int unhexify()
       msg::err("invalid character found");
 
       // signalize trouble
-      return false;
+      return BUGGY;
     }
 
     // convert number to native byte
@@ -351,6 +367,13 @@ int unhexify()
 
     // print native byte
     cout << static_cast<unsigned char>(byte);
+  }
+
+  // check eof state
+  if ( !cin.eof() )
+  {
+    // signalize trouble
+    return BUGGY;
   }
 
   // return last byte written to stdout
@@ -414,11 +437,11 @@ int main(int argc, char** argv)
         return 1;
       }
 
-      // create hex numbers
-      int last = hexify(cmdl.maxBytes, cmdl.linebreak);
+      // try to create readable hex numbers
+      int last = hexify(cmdl.maxBytes, cmdl.syncLF);
 
       // check last byte
-      if (last == -2)
+      if (last == BUGGY)
       {
         // signalize trouble
         return 1;
@@ -427,7 +450,7 @@ int main(int argc, char** argv)
       // print trailing LF character
       if (cmdl.appendLF)
       {
-        if ( !(cmdl.linebreak && (last == 10)) )
+        if ( !(cmdl.syncLF && (last == 10)) )
         {
           cout << static_cast<char>(10);
         }
@@ -437,8 +460,8 @@ int main(int argc, char** argv)
     // UNHEXIFY
     else if (cmdl.operation == cli::UNHEXIFY)
     {
-      // restore native bytes
-      if (unhexify() < 0)
+      // try to restore native byte values
+      if (unhexify() == BUGGY)
       {
         // signalize trouble
         return 1;
