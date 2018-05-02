@@ -78,6 +78,15 @@ bool cli::parse(int argc, char** argv)
   m_argv0 = argv[0];
 
   // set valid option characters
+  /*
+   * h  show help
+   * v  show version
+   * b  unhexify
+   * l  insert real LF after each 0A
+   * n  encode at most n bytes per line
+   * t  append trailing LF
+   * x  hexify
+   */
   const char* optstring = ":hvbln:tx";
 
   // the ASCII code of the current option character
