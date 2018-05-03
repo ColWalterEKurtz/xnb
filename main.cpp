@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the main() function and doxygen's main page.
  * @author     Col. Walter E. Kurtz
- * @version    2017-11-13
+ * @version    2018-05-03
  * @copyright  GNU General Public License - Version 3.0
  *
  * @mainpage
@@ -98,7 +98,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2017-11-16 01:07:16 UTC" << endl;
+  cout << "2018-05-03" << endl;
 }
 
 // -----
