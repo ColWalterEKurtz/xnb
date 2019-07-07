@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the main() function and doxygen's main page.
  * @author     Col. Walter E. Kurtz
- * @version    2018-05-03
+ * @version    2019-07-07
  * @copyright  GNU General Public License - Version 3.0
  *
  * @mainpage
@@ -77,6 +77,7 @@ void showHelp()
   cout << "  -h        show help and exit" << endl;
   cout << "  -l        print a real LF character each time a 0A byte has been encoded" << endl;
   cout << "  -n <max>  don't print more than <max> bytes per line" << endl;
+  cout << "  -s        separate all hexadecimal numbers with SPACE" << endl;
   cout << "  -t        append a trailing LF character" << endl;
   cout << "  -v        show version and exit" << endl;
   cout << "  -x        convert bytes to hexadecimal numbers" << endl;
@@ -98,7 +99,7 @@ void showHelp()
  */
 void showVersion()
 {
-  cout << "2018-05-03" << endl;
+  cout << "2019-06-07" << endl;
 }
 
 // -----
@@ -216,6 +217,9 @@ unsigned char hex2dec(char hi, char lo)
  *             - max == 0 never breaks a line
  *             - only LF characters are used to break lines
  *
+ * @param separate  insert a SPACE character to separate
+ *                  encoded bytes
+ *
  * @param breakLF  print a real LF each time a 0A byte
  *                 has been encoded
  *
@@ -226,7 +230,7 @@ unsigned char hex2dec(char hi, char lo)
  * EMPTY | no data
  *  >= 0 | the value of the last byte pushed to stdout
  */
-int hexify(int max = 0, bool breakLF = false)
+int hexify(int max, bool separate, bool breakLF)
 {
   // one byte from the stream
   char c;
@@ -237,10 +241,13 @@ int hexify(int max = 0, bool breakLF = false)
   // the number to print
   int byte = EMPTY;
 
+  // insert SPACE character
+  bool space = false;
+
   // read each byte individually from the stream
   while ( cin.get(c) )
   {
-    // convert char to unsigned char
+    // convert char to unsigned char (then implicitly to int)
     byte = static_cast<unsigned char>(c);
 
     // check if limit is given
@@ -252,6 +259,9 @@ int hexify(int max = 0, bool breakLF = false)
         // start new line (use LF character only)
         cout << static_cast<char>(10);
 
+        // don't start next line with SPACE character
+        space = false;
+
         // reset counter
         out = max;
       }
@@ -260,8 +270,14 @@ int hexify(int max = 0, bool breakLF = false)
       out -= 1;
     }
 
+    // add SPACE separator
+    if (separate && space) cout << ' ';
+
     // use iomanip to create hex numbers
     cout << setfill('0') << hex << uppercase << setw(2) << byte;
+
+    // separate next hex number
+    space = true;
 
     // check if line breaking is enabled
     if (breakLF)
@@ -271,6 +287,9 @@ int hexify(int max = 0, bool breakLF = false)
       {
         // start new line (use LF character only)
         cout << static_cast<char>(10);
+
+        // don't start next line with SPACE character
+        space = false;
 
         // reset counter
         out = max;
@@ -438,7 +457,7 @@ int main(int argc, char** argv)
       }
 
       // try to create readable hex numbers
-      int last = hexify(cmdl.maxBytes, cmdl.syncLF);
+      int last = hexify(cmdl.maxBytes, cmdl.separate, cmdl.syncLF);
 
       // check last byte
       if (last == BUGGY)

@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the implementation of the @ref cli class.
  * @author     Col. Walter E. Kurtz
- * @version    2017-11-13
+ * @version    2019-07-07
  * @copyright  GNU General Public License - Version 3.0
  */
 
@@ -84,10 +84,11 @@ bool cli::parse(int argc, char** argv)
    * b  unhexify
    * l  insert real LF after each 0A
    * n  encode at most n bytes per line
+   * s  separate all hex numbers with SPACE
    * t  append trailing LF
    * x  hexify
    */
-  const char* optstring = ":hvbln:tx";
+  const char* optstring = ":hvbln:stx";
 
   // the ASCII code of the current option character
   int optchar;
@@ -140,6 +141,13 @@ bool cli::parse(int argc, char** argv)
           // signalize trouble
           return false;
         }
+
+        // next parameter
+        break;
+
+      case 's':
+
+        separate = true;
 
         // next parameter
         break;
@@ -249,6 +257,9 @@ void cli::reset()
 
   // don't break lines by default
   syncLF = false;
+
+  // don't separate hex numbers by default
+  separate = false;
 
   // don't append LF character by default
   appendLF = false;

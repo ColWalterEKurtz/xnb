@@ -5,7 +5,7 @@
  * @file
  * @brief      This file holds the definition of the @ref cli class.
  * @author     Col. Walter E. Kurtz
- * @version    2017-11-13
+ * @version    2019-07-07
  * @copyright  GNU General Public License - Version 3.0
  */
 
@@ -56,6 +56,9 @@ public:
 
   /// add LF after each encoded 0A
   bool syncLF;
+
+  /// separate all hex numbers with SPACE
+  bool separate;
 
   /// append LF character after all hex numbers have been printed
   int appendLF;
