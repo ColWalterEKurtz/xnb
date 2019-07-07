@@ -327,25 +327,38 @@ int unhexify()
   // the byte to print
   int byte = EMPTY;
 
-  // first hexadecimal digit
-  char d1;
-
-  // read each byte individually from the stream
-  while ( cin.get(d1) )
+  // read entire stream
+  while (true)
   {
-    // skip line feed characters
-    while (d1 == 10)
+    // two hexadecimal digits
+    char hi = 32;
+    char lo = 32;
+
+    // one byte from stdin
+    char ex = 0;
+
+    // read most significant digit first
+    while ( cin.get(ex) )
     {
-      // get next byte from the stream
-      if ( !cin.get(d1) )
-      {
-        // return last byte written to stdout
-        return byte;
-      }
+      // skip whitespace characters
+      if (ex ==  9) continue;
+      if (ex == 10) continue;
+      if (ex == 13) continue;
+      if (ex == 32) continue;
+
+      hi = ex;
+      break;
+    }
+
+    // no more characters from stdin
+    if (hi == 32)
+    {
+      // return last byte written to stdout
+      return byte;
     }
 
     // check extracted character
-    if ( !ishex(d1) )
+    if ( !ishex(hi) )
     {
       // notify user
       msg::err("invalid character found");
@@ -354,25 +367,31 @@ int unhexify()
       return BUGGY;
     }
 
-    // second hexadecimal digit
-    char d2 = 10;
-
-    // skip line feed characters
-    while (d2 == 10)
+    // read least significant thereafter
+    while ( cin.get(ex) )
     {
-      // read second hexadecimal digit from the stream
-      if ( !cin.get(d2) )
-      {
-        // notify user
-        msg::err("unexpected end of stream");
+      // skip whitespace characters
+      if (ex ==  9) continue;
+      if (ex == 10) continue;
+      if (ex == 13) continue;
+      if (ex == 32) continue;
 
-        // signalize trouble
-        return BUGGY;
-      }
+      lo = ex;
+      break;
+    }
+
+    // no more characters from stdin
+    if (hi == 32)
+    {
+      // notify user
+      msg::err("unexpected end of stream");
+
+      // signalize trouble
+      return BUGGY;
     }
 
     // check extracted character
-    if ( !ishex(d2) )
+    if ( !ishex(lo) )
     {
       // notify user
       msg::err("invalid character found");
@@ -382,7 +401,7 @@ int unhexify()
     }
 
     // convert number to native byte
-    byte = hex2dec(d1, d2);
+    byte = hex2dec(hi, lo);
 
     // print native byte
     cout << static_cast<unsigned char>(byte);
